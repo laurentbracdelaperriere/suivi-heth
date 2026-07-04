@@ -169,8 +169,8 @@ section{margin-bottom:34px}
   <div class="foot-r">
     <label class="ident">Je suis
       <select id="who">
-        <option value="Consultant">Consultant</option>
-        <option value="Cliente">Cliente</option>
+        <option value="Laurent">Laurent</option>
+        <option value="Ghjulia">Ghjulia</option>
       </select>
     </label>
     <button class="reset" id="reset">Réinitialiser</button>
@@ -243,7 +243,7 @@ const SEED={
 
 /* ── État + identité ── */
 let S=load();normalize();
-let WHO=localStorage.getItem('pilotage_hh_who')||'Consultant';
+let WHO=localStorage.getItem('pilotage_hh_who')||'Laurent';
 let db=null,docRef=null,saveT=null,pendingRemote=null;
 
 function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):structuredClone(SEED);}catch(e){return structuredClone(SEED);}}
