@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>H&H — Délégation du magasin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1B2A41;--ink-soft:#33425C;--paper:#F4F1EA;--card:#FFFFFF;
+  --now:#B66A3F;--now-bg:#F8EDE4;--done:#5B8C6E;--done-bg:#E9F1EC;
+  --wip:#C99A3C;--wip-bg:#FAF2DE;--alert:#B0463C;--alert-bg:#F8E7E4;
+  --doc:#5C6B8A;--doc-bg:#EAEDF3;
+  --line:#E5DFD3;--muted:#8C8478;--radius:14px;--maxw:820px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);
+  line-height:1.5;-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif}
+
+.top{position:sticky;top:0;z-index:50;background:var(--ink);
+  padding:16px 20px;padding-top:max(16px,env(safe-area-inset-top));box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.top-in{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.brand{color:#fff}
+.brand h1{font-size:19px;font-weight:600;letter-spacing:.01em}
+.brand span{display:block;font-family:'Inter';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-top:2px}
+.hr{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.rdv{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.8);font-size:12px}
+.rdv label{color:rgba(255,255,255,.5);letter-spacing:.04em}
+.rdv input{font:inherit;font-size:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+  color:#fff;border-radius:7px;padding:5px 9px;outline:none;width:104px}
+.rdv input:focus{border-color:var(--now)}
+.prog{display:flex;align-items:center;gap:9px;min-width:150px}
+.prog-bar{flex:1;height:7px;border-radius:6px;background:rgba(255,255,255,.14);overflow:hidden}
+.prog-fill{height:100%;background:var(--done);border-radius:6px;transition:width .5s ease;width:0}
+.prog-num{font-size:11.5px;color:rgba(255,255,255,.85);font-variant-numeric:tabular-nums;white-space:nowrap}
+
+main{max-width:var(--maxw);margin:0 auto;padding:24px 20px 60px}
+section{margin-bottom:34px}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.sec-h h2{font-size:22px;font-weight:600}
+.sec-h .count{font-size:12px;color:var(--muted)}
+
+/* ── ACCORDÉON DES 3 TEMPS ── */
+.temps-row{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;transition:border-color .18s}
+.temps-row.on{border-color:var(--now);box-shadow:0 8px 28px -18px rgba(182,106,63,.55)}
+.temps-head{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;user-select:none}
+.temps-row.on .temps-head{background:var(--now-bg)}
+.th-step{font-family:'Fraunces';font-size:12px;font-weight:600;color:var(--muted);flex:0 0 auto;width:54px}
+.temps-row.on .th-step{color:var(--now)}
+.th-mid{flex:1;min-width:0}
+.th-name{font-family:'Fraunces';font-size:17px;font-weight:600;line-height:1.2}
+.th-frac{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.th-chev{color:var(--muted);transition:transform .2s;flex:0 0 auto;font-size:12px}
+.temps-row.on .th-chev{transform:rotate(90deg);color:var(--now)}
+.temps-body{padding:2px 18px 18px;display:none}
+.temps-row.on .temps-body{display:block}
+.intention{font-size:14px;color:var(--ink-soft);background:#FBFAF6;border:1px solid var(--line);border-radius:11px;padding:11px 13px;margin:8px 0 14px}
+.intention b{font-family:'Fraunces';font-weight:600;color:var(--ink);display:block;font-size:11px;letter-spacing:.05em;text-transform:uppercase;margin-bottom:4px}
+
+/* ── DEMANDES ── */
+.dmd{background:#FBFAF6;border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin-bottom:7px;display:flex;align-items:flex-start;gap:10px}
+.tag{flex:0 0 auto;font-size:10px;font-weight:600;letter-spacing:.03em;padding:3px 8px;border-radius:14px;margin-top:1px}
+.tag.action{background:var(--now-bg);color:var(--now)}
+.tag.document{background:var(--doc-bg);color:var(--doc)}
+.tag.tache{background:var(--done-bg);color:var(--done)}
+.dmd-main{flex:1;min-width:0}
+.dmd-t{font-size:13.5px;line-height:1.35}
+.dmd.done .dmd-t{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.dmd-note{width:100%;margin-top:4px;border:none;background:transparent;font:inherit;font-size:12px;color:var(--muted);resize:none;outline:none;line-height:1.4}
+.dmd-note::placeholder{color:#c2bba8}
+.pill{flex:0 0 auto;border:none;cursor:pointer;font:inherit;font-size:11px;font-weight:500;padding:5px 10px;border-radius:18px;white-space:nowrap;transition:all .15s}
+.pill.s0{background:#EFEADF;color:var(--muted)}
+.pill.s1{background:var(--wip-bg);color:var(--wip)}
+.pill.s2{background:var(--done-bg);color:var(--done)}
+.pill:hover{filter:brightness(.97)}
+.dmd-x{flex:0 0 auto;border:none;background:transparent;color:#cdc4b4;cursor:pointer;font-size:12px;padding:2px 4px;border-radius:6px;align-self:center}
+.dmd-x:hover{color:var(--alert);background:var(--alert-bg)}
+.add-dmd{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:9px;padding-top:11px;border-top:1px dashed var(--line)}
+.add-dmd select,.add-dmd input{font:inherit;font-size:12.5px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#fff;color:var(--ink);outline:none}
+.add-dmd select:focus,.add-dmd input:focus{border-color:var(--now)}
+.add-dmd input{flex:1;min-width:150px}
+.add-dmd button{border:none;cursor:pointer;font:inherit;font-size:12.5px;font-weight:500;padding:7px 13px;border-radius:8px;background:var(--ink);color:#fff}
+.add-dmd button:hover{background:var(--ink-soft)}
+
+/* ── FOCUS À AVOIR ── */
+.focus-intro{font-size:14px;color:var(--ink-soft);margin-bottom:14px}
+.rem{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 14px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start}
+.rem-tag{flex:0 0 auto;font-size:16px;line-height:1.4}
+.rem-body{flex:1;min-width:0}
+.rem-txt{font-size:14px;line-height:1.45}
+.rem-foot{display:flex;align-items:center;gap:10px;margin-top:7px;flex-wrap:wrap}
+.rpill{border:none;cursor:pointer;font:inherit;font-size:11px;font-weight:500;padding:5px 11px;border-radius:18px;white-space:nowrap;transition:all .15s}
+.rpill.r0{background:var(--alert-bg);color:var(--alert)}
+.rpill.r1{background:var(--wip-bg);color:var(--wip)}
+.rpill.r2{background:var(--done-bg);color:var(--done)}
+.rem-date{font-size:11px;color:var(--muted)}
+.rem-auth{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#EFEADF;color:var(--ink-soft)}
+.rem-x{margin-left:auto;border:none;background:transparent;color:#cabfae;cursor:pointer;font-size:14px;padding:2px 5px;border-radius:6px}
+.rem-x:hover{color:var(--alert);background:var(--alert-bg)}
+.add{background:var(--card);border:1px dashed var(--line);border-radius:11px;padding:14px;margin-top:4px}
+.add-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.add select,.add input,.add textarea{font:inherit;font-size:13px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;color:var(--ink);outline:none}
+.add select:focus,.add input:focus,.add textarea:focus{border-color:var(--now)}
+.add input{flex:1;min-width:130px}
+.add textarea{width:100%;resize:vertical;min-height:48px;line-height:1.4}
+.btn{border:none;cursor:pointer;font:inherit;font-size:13px;font-weight:500;padding:9px 18px;border-radius:8px;background:var(--ink);color:#fff}
+.btn:hover{background:var(--ink-soft)}
+
+.foot{max-width:var(--maxw);margin:0 auto;padding:0 20px 30px;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+.foot small{color:var(--muted);font-size:11.5px;display:flex;align-items:center;gap:7px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:0 0 auto;transition:background .3s}
+.dot.ok{background:var(--done)}.dot.warn{background:var(--wip)}.dot.err{background:var(--alert)}
+.foot-r{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ident{font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.ident select{font:inherit;font-size:11.5px;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:#fff;color:var(--ink);outline:none}
+.ident select:focus{border-color:var(--now)}
+.reset{border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer;font:inherit;font-size:11.5px;padding:6px 12px;border-radius:8px}
+.reset:hover{border-color:var(--alert);color:var(--alert)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(8px);background:var(--ink);color:#fff;font-size:12.5px;padding:9px 18px;border-radius:22px;opacity:0;pointer-events:none;transition:all .3s;z-index:99}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+:focus-visible{outline:2px solid var(--now);outline-offset:2px;border-radius:4px}
+
+@media(max-width:600px){.brand h1{font-size:17px}.th-step{width:46px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>H&amp;H — Délégation du magasin</h1>
+      <span>Myriam pilote · Ghjulia gardienne · Pascale à reembarquer</span>
+    </div>
+    <div class="hr">
+      <div class="prog"><div class="prog-bar"><div class="prog-fill" id="pfill"></div></div><div class="prog-num" id="pnum">—</div></div>
+      <div class="rdv"><label>Prochain point</label><input id="rdv" value="20 juillet"></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="temps">
+    <div class="sec-h"><h2>Les 3 temps de la délégation</h2><span class="count">Cliquez un temps pour l’ouvrir</span></div>
+    <div id="temps-acc"></div>
+  </section>
+
+  <section id="focus">
+    <div class="sec-h"><h2>Focus à avoir</h2><span class="count" id="rem-count"></span></div>
+    <p class="focus-intro">Remarques &amp; alertes à noter sur la situation, avant ou pendant la séance. Le statut suit leur prise en charge.</p>
+    <div id="rem-list"></div>
+    <div class="add">
+      <div class="add-row">
+        <select id="r-type"><option value="📝">📝 Remarque</option><option value="⚠️">⚠️ Alerte</option></select>
+        <input id="r-date" placeholder="Date / contexte…">
+      </div>
+      <textarea id="r-txt" placeholder="Ce qui se passe, un point de vigilance, une demande…"></textarea>
+      <div style="margin-top:8px"><button class="btn" id="r-add">+ Ajouter</button></div>
+    </div>
+  </section>
+</main>
+
+<div class="foot">
+  <small><span class="dot" id="syncdot"></span><span id="syncmsg">Connexion…</span></small>
+  <div class="foot-r">
+    <label class="ident">Je suis
+      <select id="who">
+        <option value="Consultant">Consultant</option>
+        <option value="Cliente">Cliente</option>
+      </select>
+    </label>
+    <button class="reset" id="reset">Réinitialiser</button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ════════ SYNCHRO TEMPS RÉEL (Firebase) ════════ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════════════════════
+   ① CONFIG FIREBASE — À REMPLIR (voir consignes fournies)
+   Collez ici les 6 valeurs de votre projet Firebase.
+   Tant que ce n'est pas fait, l'appli marche en LOCAL seulement.
+   ════════════════════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey:            "***REMOVED-API-KEY***",
+  authDomain:        "suivi-heth.firebaseapp.com",
+  projectId:         "suivi-heth",
+  storageBucket:     "suivi-heth.firebasestorage.app",
+  messagingSenderId: "660625875866",
+  appId:             "1:660625875866:web:b4f9339baeb505ba76d023"
+};
+const DOC_ID = 'hh';          // identifiant de CE suivi (cliente H&H)
+/* ════════════════════════════════════════════════════════════ */
+
+const KEY='pilotage_hh_v1';
+const TYPE={action:'Action',document:'Doc',tache:'Tâche'};
+const RLBL=['À prendre en compte','En cours','Traité'];
+
+const SEED={
+  rdv:'20 juillet',
+  temps:[
+    {id:'t1',n:'Observation & formalisation',open:true,
+     intention:'Rendre le fonctionnement explicite : construire les documents et le carnet des exigences.',
+     labels:['À construire','En cours','Construit'],
+     demandes:[
+       {type:'document',t:'Trame de vente',s:0,note:''},
+       {type:'document',t:'Check-list de relecture des devis',s:0,note:''},
+       {type:'document',t:'Standards de gestion client',s:0,note:''},
+       {type:'document',t:'Carnet d’alignement des exigences',s:0,note:''},
+       {type:'document',t:'Process d’intégration des 2 arrivants de l’été (piloté par Myriam)',s:0,note:''},
+       {type:'action',t:'Faire émerger le savoir réel de Pascale (« au feeling » = quoi, précisément ?)',s:0,note:''}
+     ]},
+    {id:'t2',n:'Transmission',open:false,
+     intention:'Transmettre posture et savoir-faire, faire monter Myriam, repositionner Pascale.',
+     labels:['À transmettre','En cours','Transmis'],
+     demandes:[
+       {type:'action',t:'Transmettre le pilotage du magasin à Myriam',s:0,note:''},
+       {type:'action',t:'Repositionner Pascale en formatrice / sachante (valorisée sur son savoir-client)',s:0,note:''},
+       {type:'action',t:'Manager Pascale par questions (« cette trame marche-t-elle ? comment l’améliorer ? »)',s:0,note:''},
+       {type:'action',t:'Impliquer les vendeuses comme formatrices par spécialité',s:0,note:''}
+     ]},
+    {id:'t3',n:'Autonomie',open:false,
+     intention:'Myriam pilote, Ghjulia se dégage, valider la stabilité du système.',
+     labels:['À valider','En cours','Validé'],
+     demandes:[
+       {type:'action',t:'Myriam anime les rituels d’équipe sans Ghjulia',s:0,note:''},
+       {type:'tache',t:'Suivre les dérives à distance (taux de transfo, ambiance)',s:0,note:''},
+       {type:'action',t:'Stabiliser les rôles (Myriam / Pascale / Amina)',s:0,note:''},
+       {type:'action',t:'Dégager du temps de Ghjulia pour la boulangerie',s:0,note:''}
+     ]}
+  ],
+  focus:[]
+};
+
+/* ── État + identité ── */
+let S=load();normalize();
+let WHO=localStorage.getItem('pilotage_hh_who')||'Consultant';
+let db=null,docRef=null,saveT=null,pendingRemote=null;
+
+function load(){try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):structuredClone(SEED);}catch(e){return structuredClone(SEED);}}
+function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function normalize(){if(!S.temps)S.temps=structuredClone(SEED.temps);if(!S.focus)S.focus=[];S.temps.forEach(tp=>tp.demandes.forEach(d=>{if(!d.id)d.id=uid();if(d.s==null)d.s=0;if(d.note==null)d.note='';}));}
+function uid(){return 'd'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function esc(t){const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
+let toastT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1600);}
+function autoGrow(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
+
+function allDemandes(){return S.temps.flatMap(t=>t.demandes);}
+
+/* ── Indicateur de synchro ── */
+function setSync(msg,state){const m=document.getElementById('syncmsg'),d=document.getElementById('syncdot');if(m)m.textContent=msg;if(d)d.className='dot'+(state?(' '+state):'');}
+
+/* ── Sauvegarde : locale + cloud (anti-rebond) ── */
+function save(){
+  saveLocal();
+  if(!docRef)return;
+  clearTimeout(saveT);setSync('Enregistrement…','warn');
+  saveT=setTimeout(()=>{
+    docRef.set(S).then(()=>setSync('Synchronisé','ok')).catch(e=>{console.error(e);setSync('Erreur d’enregistrement','err');});
+  },400);
+}
+
+/* ── Connexion temps réel ── */
+function initFirebase(){
+  if(firebaseConfig.apiKey==='A_REMPLIR'){setSync('Local uniquement — config Firebase à remplir','warn');return;}
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db=firebase.firestore();docRef=db.collection('suivis').doc(DOC_ID);
+    setSync('Connexion…','warn');
+    docRef.onSnapshot(snap=>{
+      if(!snap.exists){docRef.set(S).then(()=>setSync('Synchronisé','ok'));return;}
+      if(snap.metadata.hasPendingWrites)return;   // notre propre écriture
+      const data=snap.data();
+      const el=document.activeElement,typing=el&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT');
+      if(typing){pendingRemote=data;setSync('Mise à jour reçue…','warn');return;}
+      applyRemote(data);
+    },err=>{console.error(err);setSync('Hors ligne','err');});
+  }catch(e){console.error(e);setSync('Config Firebase invalide','err');}
+}
+function applyRemote(data){
+  S=data;normalize();saveLocal();render();
+  document.getElementById('rdv').value=S.rdv||'';
+  setSync('Synchronisé','ok');
+}
+document.addEventListener('focusout',()=>{
+  setTimeout(()=>{
+    const el=document.activeElement,typing=el&&(el.tagName==='TEXTAREA'||el.tagName==='INPUT');
+    if(!typing&&pendingRemote){const d=pendingRemote;pendingRemote=null;applyRemote(d);}
+  },80);
+});
+
+/* ── Rendu ── */
+function render(){renderTemps();renderFocus();renderProgress();}
+
+function renderProgress(){
+  const a=allDemandes();const done=a.filter(d=>d.s===2).length;
+  const p=a.length?Math.round(done/a.length*100):0;
+  document.getElementById('pfill').style.width=p+'%';
+  document.getElementById('pnum').textContent=done+' / '+a.length+' finalisés';
+}
+
+function renderTemps(){
+  const acc=document.getElementById('temps-acc');
+  acc.innerHTML=S.temps.map((tp,ti)=>{
+    const on=tp.open;const done=tp.demandes.filter(d=>d.s===2).length;
+    const head='<div class="temps-head" data-t="'+ti+'">'
+      +'<div class="th-step">Temps '+(ti+1)+'</div>'
+      +'<div class="th-mid"><div class="th-name">'+esc(tp.n)+'</div></div>'
+      +'<div class="th-frac">'+done+'/'+tp.demandes.length+'</div>'
+      +'<div class="th-chev">▶</div></div>';
+    let body='';
+    if(on){
+      const rows=tp.demandes.map((d,di)=>
+        '<div class="dmd'+(d.s===2?' done':'')+'">'
+        +'<span class="tag '+d.type+'">'+TYPE[d.type]+'</span>'
+        +'<div class="dmd-main"><div class="dmd-t">'+esc(d.t)+'</div>'
+        +'<textarea class="dmd-note" data-t="'+ti+'" data-d="'+di+'" rows="1" placeholder="Note / porteur…">'+esc(d.note||'')+'</textarea></div>'
+        +'<button class="pill s'+d.s+'" data-t="'+ti+'" data-d="'+di+'">'+tp.labels[d.s]+'</button>'
+        +'<button class="dmd-x" data-t="'+ti+'" data-d="'+di+'" title="Retirer">✕</button></div>'
+      ).join('');
+      body='<div class="temps-body">'
+        +'<div class="intention"><b>Intention</b>'+esc(tp.intention)+'</div>'+rows
+        +'<div class="add-dmd">'
+        +'<select class="ad-type" data-t="'+ti+'"><option value="action">Action</option><option value="document">Document</option><option value="tache">Tâche</option></select>'
+        +'<input class="ad-txt" data-t="'+ti+'" placeholder="Ajouter une demande…">'
+        +'<button class="ad-add" data-t="'+ti+'">+ Ajouter</button></div>'
+        +'</div>';
+    }
+    return '<div class="temps-row'+(on?' on':'')+'">'+head+body+'</div>';
+  }).join('');
+
+  acc.querySelectorAll('.temps-head[data-t]').forEach(h=>h.onclick=()=>{
+    const ti=+h.dataset.t;S.temps[ti].open=!S.temps[ti].open;save();renderTemps();
+  });
+  acc.querySelectorAll('.pill').forEach(b=>b.onclick=(e)=>{
+    e.stopPropagation();const d=S.temps[+b.dataset.t].demandes[+b.dataset.d];d.s=(d.s+1)%3;save();renderTemps();renderProgress();
+  });
+  acc.querySelectorAll('.dmd-x').forEach(b=>b.onclick=(e)=>{
+    e.stopPropagation();S.temps[+b.dataset.t].demandes.splice(+b.dataset.d,1);save();renderTemps();renderProgress();
+  });
+  acc.querySelectorAll('.dmd-note').forEach(ta=>{
+    autoGrow(ta);
+    ta.addEventListener('click',e=>e.stopPropagation());
+    ta.addEventListener('input',()=>{S.temps[+ta.dataset.t].demandes[+ta.dataset.d].note=ta.value;autoGrow(ta);save();});
+  });
+  acc.querySelectorAll('.ad-add').forEach(b=>b.onclick=(e)=>{
+    e.stopPropagation();const ti=+b.dataset.t;
+    const sel=acc.querySelector('.ad-type[data-t="'+ti+'"]');
+    const inp=acc.querySelector('.ad-txt[data-t="'+ti+'"]');
+    const txt=inp.value.trim();if(!txt){toast('Écris la demande');return;}
+    S.temps[ti].demandes.push({id:uid(),type:sel.value,t:txt,s:0,note:''});
+    save();renderTemps();renderProgress();toast('Demande ajoutée');
+  });
+  acc.querySelectorAll('.ad-txt').forEach(inp=>{
+    inp.addEventListener('click',e=>e.stopPropagation());
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')acc.querySelector('.ad-add[data-t="'+inp.dataset.t+'"]').click();});
+  });
+  acc.querySelectorAll('.ad-type').forEach(s=>s.addEventListener('click',e=>e.stopPropagation()));
+}
+
+function renderFocus(){
+  const l=document.getElementById('rem-list');
+  document.getElementById('rem-count').textContent=S.focus.length?S.focus.length+' notées':'';
+  l.innerHTML=S.focus.map(r=>{
+    const meta=[r.author?'<span class="rem-auth">'+esc(r.author)+'</span>':'',r.date?'<span class="rem-date">'+esc(r.date)+'</span>':''].filter(Boolean).join('');
+    return '<div class="rem"><div class="rem-tag">'+r.type+'</div>'
+    +'<div class="rem-body"><div class="rem-txt">'+esc(r.txt)+'</div>'
+    +'<div class="rem-foot"><button class="rpill r'+r.s+'" data-id="'+r.id+'">'+RLBL[r.s]+'</button>'
+    +meta
+    +'<button class="rem-x" data-del="'+r.id+'" title="Supprimer">✕</button></div></div></div>';
+  }).join('')||'<div style="color:var(--muted);font-size:13px;padding:2px 0 10px">Aucune remarque pour l’instant.</div>';
+  l.querySelectorAll('.rpill').forEach(b=>b.onclick=()=>{const r=S.focus.find(x=>x.id===b.dataset.id);if(r){r.s=(r.s+1)%3;save();renderFocus();}});
+  l.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{S.focus=S.focus.filter(x=>x.id!==b.dataset.del);save();renderFocus();});
+}
+
+/* ── Identité ── */
+const whoSel=document.getElementById('who');
+whoSel.value=WHO;
+whoSel.onchange=()=>{WHO=whoSel.value;localStorage.setItem('pilotage_hh_who',WHO);};
+
+document.getElementById('r-add').onclick=()=>{
+  const txt=document.getElementById('r-txt').value.trim();
+  if(!txt){toast('Écris d’abord la remarque');return;}
+  S.focus.unshift({id:uid(),type:document.getElementById('r-type').value,txt:txt,date:document.getElementById('r-date').value.trim(),author:WHO,s:0});
+  document.getElementById('r-txt').value='';document.getElementById('r-date').value='';
+  save();renderFocus();toast('Remarque ajoutée');
+};
+
+document.getElementById('rdv').value=S.rdv||'';
+document.getElementById('rdv').addEventListener('input',e=>{S.rdv=e.target.value;save();});
+document.getElementById('reset').onclick=()=>{
+  if(confirm('Réinitialiser tout le suivi H&H pour TOUT LE MONDE ? Les demandes, statuts, notes et remarques seront effacés des deux côtés.')){
+    S=structuredClone(SEED);normalize();save();render();document.getElementById('rdv').value=S.rdv;toast('Réinitialisé');
+  }
+};
+
+render();
+initFirebase();
+</script>
+</body>
+</html>
