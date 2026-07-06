@@ -182,15 +182,24 @@ section{margin-bottom:34px}
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
-<!-- ① CONFIG FIREBASE — voir firebase-config.example.js pour le modèle.
-     Le fichier firebase-config.js (à côté d'index.html) contient les
-     valeurs réelles et NE DOIT JAMAIS être glissé/uploadé sur GitHub. -->
-<script src="firebase-config.js"></script>
-
 <script>
 'use strict';
 
+/* ════════════════════════════════════════════════════════════
+   ① CONFIG FIREBASE — clé Web restreinte par domaine (Référents HTTP)
+   dans Google Cloud Console. Ce n'est pas un secret côté client :
+   la sécurité vient de cette restriction + des règles Firestore.
+   ════════════════════════════════════════════════════════════ */
+const firebaseConfig = {
+  apiKey:            "AIzaSyCrOC2uNG8TkklyVGXY18QYD6jvQ75-doI",
+  authDomain:        "suivi-heth.firebaseapp.com",
+  projectId:         "suivi-heth",
+  storageBucket:     "suivi-heth.firebasestorage.app",
+  messagingSenderId: "660625875866",
+  appId:             "1:660625875866:web:b4f9339baeb505ba76d023"
+};
 const DOC_ID = 'hh';          // identifiant de CE suivi (cliente H&H)
+/* ════════════════════════════════════════════════════════════ */
 
 const KEY='pilotage_hh_v1';
 const TYPE={action:'Action',document:'Doc',tache:'Tâche'};
