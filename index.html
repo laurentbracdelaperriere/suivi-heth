@@ -182,24 +182,15 @@ section{margin-bottom:34px}
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
+<!-- ① CONFIG FIREBASE — voir firebase-config.example.js pour le modèle.
+     Copiez ce fichier en firebase-config.js (non commité, listé dans .gitignore)
+     et remplissez-y vos 6 valeurs de projet Firebase. -->
+<script src="firebase-config.js"></script>
+
 <script>
 'use strict';
 
-/* ════════════════════════════════════════════════════════════
-   ① CONFIG FIREBASE — À REMPLIR (voir consignes fournies)
-   Collez ici les 6 valeurs de votre projet Firebase.
-   Tant que ce n'est pas fait, l'appli marche en LOCAL seulement.
-   ════════════════════════════════════════════════════════════ */
-const firebaseConfig = {
-  apiKey:            "***REMOVED-API-KEY***",
-  authDomain:        "suivi-heth.firebaseapp.com",
-  projectId:         "suivi-heth",
-  storageBucket:     "suivi-heth.firebasestorage.app",
-  messagingSenderId: "660625875866",
-  appId:             "1:660625875866:web:b4f9339baeb505ba76d023"
-};
 const DOC_ID = 'hh';          // identifiant de CE suivi (cliente H&H)
-/* ════════════════════════════════════════════════════════════ */
 
 const KEY='pilotage_hh_v1';
 const TYPE={action:'Action',document:'Doc',tache:'Tâche'};

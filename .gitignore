@@ -1,0 +1,6 @@
+# Config sensible (ne jamais committer)
+firebase-config.js
+.env
+.env.*
+!.env.example
+*.local
